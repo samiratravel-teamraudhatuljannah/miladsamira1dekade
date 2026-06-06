@@ -21,7 +21,6 @@
             padding: 24px;
         }
 
-        /* Container utama - simpel putih gold */
         .app {
             max-width: 1100px;
             width: 100%;
@@ -31,7 +30,6 @@
             overflow: hidden;
         }
 
-        /* Header simpel */
         .header {
             background: #ffffff;
             padding: 20px 28px;
@@ -51,7 +49,6 @@
             color: #c9a03d;
         }
 
-        /* Dua kolom */
         .editor {
             display: flex;
             flex-wrap: wrap;
@@ -60,7 +57,6 @@
             background: #ffffff;
         }
 
-        /* Area preview canvas */
         .preview {
             flex: 1.5;
             min-width: 280px;
@@ -92,7 +88,6 @@
             cursor: grabbing;
         }
 
-        /* Panel kontrol - putih gold */
         .controls {
             flex: 1;
             min-width: 260px;
@@ -134,7 +129,6 @@
             display: none;
         }
 
-        /* Slider styling gold */
         .slider-group {
             margin: 20px 0;
         }
@@ -261,7 +255,6 @@
         <h1>⚜️ SAMIRA <span>✦ MILAD ✦</span> ⚜️</h1>
     </div>
     <div class="editor">
-        <!-- Kiri: canvas preview -->
         <div class="preview">
             <div class="canvas-wrapper">
                 <canvas id="mainCanvas" width="800" height="800" style="width:100%; height:auto; aspect-ratio:1/1"></canvas>
@@ -271,7 +264,6 @@
             </div>
         </div>
 
-        <!-- Kanan: kontrol -->
         <div class="controls">
             <div class="upload-area" id="uploadArea">
                 <div class="upload-icon">🖼️ ➕ ⭕</div>
@@ -286,12 +278,12 @@
 
             <div class="slider-group">
                 <label>⬅️ Geser Horizontal ➡️</label>
-                <input type="range" id="offsetXSlider" min="-250" max="250" value="0" step="2">
+                <input type="range" id="offsetXSlider" min="-300" max="300" value="0" step="2">
             </div>
 
             <div class="slider-group">
                 <label>⬆️ Geser Vertikal ⬇️</label>
-                <input type="range" id="offsetYSlider" min="-250" max="250" value="0" step="2">
+                <input type="range" id="offsetYSlider" min="-300" max="300" value="0" step="2">
             </div>
 
             <div class="btn-group">
@@ -300,7 +292,7 @@
             </div>
             <div id="alertBox" class="alert-message"></div>
             <div class="info-note">
-                ✨ Foto akan muncul di LINGKARAN PUTIH (sebelah kanan template)<br>
+                ✨ Foto akan muncul di LINGKARAN PUTIH BESAR (sebelah kanan template)<br>
                 Geser dan zoom agar pas!
             </div>
         </div>
@@ -326,24 +318,19 @@
         const alertBox = document.getElementById('alertBox');
 
         // ======================== GLOBAL STATE ========================
-        let templateImage = null;           // gambar template (background)
-        let userPhoto = null;               // elemen gambar user
+        let templateImage = null;
+        let userPhoto = null;
         let photoLoaded = false;
 
-        // Parameter lingkaran putih (WAJIB di sebelah kanan template)
-        // Berdasarkan desain template Samira: lingkaran putih berada di area kanan.
-        // Ukuran canvas dinamis mengikuti template. Koordinat lingkaran relatif terhadap canvas.
+        // Lingkaran PUTIH yang lebih BESAR (di sebelah kanan template)
         let circle = { x: 0, y: 0, radius: 0 };
 
-        // Parameter transformasi foto
         let zoomPercent = 100;
         let offsetX = 0;
         let offsetY = 0;
 
-        // Ukuran canvas
         let canvasW = 800, canvasH = 800;
 
-        // ======================== Helper ========================
         function showAlert(msg, isError = true) {
             if (!msg) {
                 alertBox.style.display = 'none';
@@ -358,7 +345,6 @@
             }, 4000);
         }
 
-        // Update slider nilai
         function updateUIFromState() {
             zoomSlider.value = zoomPercent;
             zoomValSpan.innerText = zoomPercent + '%';
@@ -366,7 +352,6 @@
             offsetYSlider.value = offsetY;
         }
 
-        // Reset posisi & zoom ke tengah lingkaran
         function resetTransform() {
             zoomPercent = 100;
             offsetX = 0;
@@ -379,10 +364,9 @@
             }
         }
 
-        // ======================== RENDER UTAMA (template + foto di dalam LINGKARAN PUTIH) ========================
+        // ======================== RENDER ========================
         function renderComposite() {
             if (!templateImage) {
-                // fallback
                 ctx.fillStyle = "#f3ede3";
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
                 ctx.fillStyle = "#b8860b";
@@ -391,96 +375,86 @@
                 return;
             }
 
-            // 1. Gambar template penuh
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.drawImage(templateImage, 0, 0, canvas.width, canvas.height);
 
-            // 2. Jika belum ada foto, hanya template
             if (!photoLoaded || !userPhoto) return;
 
-            // 3. Simpan state, buat clipping area berbentuk lingkaran putih (sesuai template)
             ctx.save();
             ctx.beginPath();
             ctx.arc(circle.x, circle.y, circle.radius, 0, Math.PI * 2);
             ctx.clip();
 
-            // 4. Hitung ukuran foto berdasarkan zoomPercent
             const scale = zoomPercent / 100;
             const baseDiameter = circle.radius * 2;
             let displayWidth = baseDiameter * scale;
             let displayHeight = (userPhoto.height / userPhoto.width) * displayWidth;
 
-            // Posisi gambar: pusat lingkaran + offset, lalu minus setengah ukuran
             let drawX = circle.x + offsetX - (displayWidth / 2);
             let drawY = circle.y + offsetY - (displayHeight / 2);
 
             ctx.drawImage(userPhoto, drawX, drawY, displayWidth, displayHeight);
-            ctx.restore();  // restore clipping, lingkaran tetap rapi
+            ctx.restore();
 
-            // Opsional: tambahkan stroke tipis keemasan pada lingkaran (memperjelas)
+            // Stroke lingkaran emas tipis
             ctx.beginPath();
             ctx.arc(circle.x, circle.y, circle.radius, 0, 2 * Math.PI);
-            ctx.lineWidth = 2.5;
-            ctx.strokeStyle = "#e4c483";
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = "#d4af7a";
             ctx.shadowBlur = 0;
             ctx.stroke();
         }
 
-        // ======================== Menentukan posisi & ukuran LINGKARAN PUTIH berdasarkan template ========================
-        // Karena template memiliki lingkaran putih di SEBELAH KANAN.
-        // Parameter ini bisa disesuaikan: lingkaran putih biasanya di area kanan tengah.
-        // Koordinat relatif terhadap ukuran canvas. Kita ambil dari rasio.
-        function setCirclePositionFromTemplate() {
+        // ======================== LINGKARAN BESAR (di kanan) ========================
+        // Ukuran lingkaran diperbesar: radius 24% dari lebar canvas (sebelumnya 16%)
+        // Posisi tetap di kanan (75% dari kiri)
+        function setCirclePosition() {
             if (!templateImage) {
-                // fallback: lingkaran di kanan (75% dari lebar, 50% tinggi)
-                circle.x = canvas.width * 0.72;
+                circle.x = canvas.width * 0.74;
                 circle.y = canvas.height * 0.5;
-                circle.radius = canvas.width * 0.18;
+                circle.radius = canvas.width * 0.24;
                 return;
             }
-            // Berdasarkan desain visual template Samira yang diberikan:
-            // Lingkaran putih terdapat di sisi kanan, kurang lebih 73% dari lebar, vertikal tengah, radius sekitar 16-18% dari lebar canvas.
-            // Supaya fleksibel, kita pakai pendekatan proporsional:
-            circle.x = canvas.width * 0.73;
+            // Lingkaran putih di template Samira berada di area kanan.
+            // Agar lebih besar dan proporsional: radius 24% dari lebar canvas
+            circle.x = canvas.width * 0.74;
             circle.y = canvas.height * 0.5;
-            circle.radius = canvas.width * 0.16;
+            circle.radius = canvas.width * 0.24;
             
-            // Sedikit penyesuaian jika template lebih lebar (optional, tapi aman)
-            // Juga pastikan radius tidak terlalu kecil
-            if (circle.radius < 60) circle.radius = 60;
+            // Jika radius masih kurang dari 90px, paksa minimal 90px agar jelas besar
+            if (circle.radius < 90) circle.radius = 90;
+            
+            // Batas maksimal radius agar tidak terlalu besar menutupi teks (40% dari lebar)
+            if (circle.radius > canvas.width * 0.32) circle.radius = canvas.width * 0.32;
         }
 
-        // ======================== Load template dari assets/template.png ========================
+        // ======================== LOAD TEMPLATE ========================
         function loadTemplate() {
             return new Promise((resolve, reject) => {
                 const img = new Image();
                 img.crossOrigin = "Anonymous";
                 img.onload = () => {
                     templateImage = img;
-                    // set ukuran canvas sesuai template agar tidak pecah
                     canvas.width = img.width;
                     canvas.height = img.height;
                     canvasW = img.width;
                     canvasH = img.height;
                     
-                    // Update posisi lingkaran berdasarkan template
-                    setCirclePositionFromTemplate();
+                    setCirclePosition();
                     
-                    // jika foto sudah ada, render ulang
                     if (photoLoaded && userPhoto) renderComposite();
-                    else if (templateImage) renderComposite();  // tampilkan template saja
+                    else if (templateImage) renderComposite();
                     resolve(img);
                 };
                 img.onerror = (err) => {
                     console.error(err);
-                    reject(new Error("Template tidak ditemukan di folder 'assets/template.png'. Pastikan file ada."));
+                    reject(new Error("Template tidak ditemukan di folder 'assets/template.png'"));
                 };
-                // path template sesuai permintaan
                 img.src = "assets/template.png?v=" + Date.now();
             });
         }
 
-        // ======================== Load foto user ========================
+        // ======================== LOAD FOTO ========================
         function loadUserPhoto(file) {
             if (!file.type.startsWith('image/')) {
                 showAlert("❌ Hanya file gambar (JPG, PNG, WEBP)", true);
@@ -497,11 +471,9 @@
                 img.onload = () => {
                     userPhoto = img;
                     photoLoaded = true;
-                    // reset posisi zoom agar pas di lingkaran
                     resetTransform();
                     if (templateImage) renderComposite();
                     else {
-                        // template belum siap? tunggu sebentar biasanya sudah preload
                         renderComposite();
                     }
                 };
@@ -514,7 +486,7 @@
             return true;
         }
 
-        // ======================== Unduh hasil jadi ========================
+        // ======================== DOWNLOAD ========================
         function downloadFinal() {
             if (!templateImage) {
                 showAlert("⏳ Template masih dimuat, tunggu sebentar", true);
@@ -524,7 +496,6 @@
                 showAlert("📸 Upload foto terlebih dahulu!", true);
                 return;
             }
-            // render ulang untuk memastikan kondisi terbaru
             renderComposite();
             try {
                 const dataURL = canvas.toDataURL("image/png");
@@ -541,7 +512,7 @@
             }
         }
 
-        // ======================== Drag & Drop & Geser Langsung pada Canvas ========================
+        // ======================== DRAG & GESER LANGSUNG ========================
         let isDragging = false;
         let lastMouseX = 0, lastMouseY = 0;
 
@@ -588,8 +559,7 @@
             if (deltaX !== 0 || deltaY !== 0) {
                 offsetX += deltaX;
                 offsetY += deltaY;
-                // batasi pergerakan agar foto tidak terlalu keluar (opsional)
-                const maxOffset = circle.radius * 1.2;
+                const maxOffset = circle.radius * 1.3;
                 offsetX = Math.min(Math.max(offsetX, -maxOffset), maxOffset);
                 offsetY = Math.min(Math.max(offsetY, -maxOffset), maxOffset);
                 offsetXSlider.value = offsetX;
@@ -605,9 +575,8 @@
             canvas.style.cursor = 'grab';
         }
 
-        // ======================== Event binding ========================
+        // ======================== BIND EVENTS ========================
         function bindEvents() {
-            // Mouse & touch events untuk geser langsung
             canvas.addEventListener('mousedown', handleDragStart);
             window.addEventListener('mousemove', handleDragMove);
             window.addEventListener('mouseup', handleDragEnd);
@@ -615,7 +584,6 @@
             window.addEventListener('touchmove', handleDragMove, { passive: false });
             window.addEventListener('touchend', handleDragEnd);
 
-            // Slider events
             zoomSlider.addEventListener('input', (e) => {
                 zoomPercent = parseInt(e.target.value);
                 zoomValSpan.innerText = zoomPercent + '%';
@@ -633,13 +601,11 @@
             resetBtn.addEventListener('click', resetTransform);
             downloadBtn.addEventListener('click', downloadFinal);
 
-            // Upload via klik area & drag drop
             uploadArea.addEventListener('click', () => photoInput.click());
             photoInput.addEventListener('change', (e) => {
                 if (e.target.files && e.target.files[0]) loadUserPhoto(e.target.files[0]);
             });
 
-            // Drag & drop file
             uploadArea.addEventListener('dragover', (e) => {
                 e.preventDefault();
                 uploadArea.style.background = "#faf0df";
@@ -658,7 +624,6 @@
         // ======================== INIT ========================
         async function init() {
             bindEvents();
-            // tampilkan loading ringan
             ctx.fillStyle = "#f3ede3";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = "#b8860b";
@@ -667,15 +632,13 @@
             
             try {
                 await loadTemplate();
-                console.log("✅ Template Samira siap, lingkaran di kanan");
-                // setelah template siap, pastikan posisi lingkaran terupdate
-                setCirclePositionFromTemplate();
+                console.log("✅ Template Samira siap, lingkaran BESAR di kanan");
+                setCirclePosition();
                 if (photoLoaded && userPhoto) renderComposite();
-                else renderComposite(); // tampilkan template saja
+                else renderComposite();
             } catch(err) {
                 console.warn(err);
                 showAlert("⚠️ Template tidak ditemukan di 'assets/template.png'", true);
-                // fallback buat dummy
                 templateImage = null;
                 ctx.fillStyle = "#f3ede3";
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -684,9 +647,8 @@
                 ctx.fillText("Template tidak ada!", canvas.width/2-80, canvas.height/2);
                 ctx.font = "12px";
                 ctx.fillText("Pastikan folder assets/template.png tersedia", canvas.width/2-150, canvas.height/2+40);
-                // tetap set circle dummy
                 canvas.width = 800; canvas.height = 800;
-                setCirclePositionFromTemplate();
+                setCirclePosition();
             }
         }
 
