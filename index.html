@@ -1,0 +1,793 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Samira Milad | Editor Foto 2 Template</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f5efe7;
+            font-family: 'Segoe UI', 'Poppins', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 24px;
+        }
+
+        .app {
+            max-width: 1100px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 32px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        .header {
+            background: #ffffff;
+            padding: 20px 28px;
+            border-bottom: 2px solid #e8d5b5;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 1.6rem;
+            font-weight: 500;
+            color: #b8860b;
+            letter-spacing: 2px;
+        }
+
+        .header h1 span {
+            font-weight: 300;
+            color: #c9a03d;
+        }
+
+        .editor {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+            padding: 28px;
+            background: #ffffff;
+        }
+
+        .preview {
+            flex: 1.5;
+            min-width: 280px;
+            background: #faf8f3;
+            border-radius: 28px;
+            padding: 20px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.02), 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .canvas-wrapper {
+            background: #f0eadc;
+            border-radius: 24px;
+            padding: 12px;
+            display: flex;
+            justify-content: center;
+        }
+
+        canvas {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            cursor: grab;
+            background: #f3ede3;
+        }
+
+        canvas:active {
+            cursor: grabbing;
+        }
+
+        .controls {
+            flex: 1;
+            min-width: 260px;
+            background: #ffffff;
+            border-radius: 28px;
+            padding: 20px;
+            border: 1px solid #eeddbb;
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.04);
+        }
+
+        /* Template selector */
+        .template-selector {
+            background: #fefaf2;
+            border-radius: 24px;
+            padding: 16px;
+            margin-bottom: 24px;
+            border: 1px solid #eeddbb;
+        }
+
+        .template-title {
+            font-weight: 600;
+            color: #8b6b3d;
+            margin-bottom: 12px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .template-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .template-btn {
+            flex: 1;
+            padding: 10px 12px;
+            border: 2px solid #d4af7a;
+            background: white;
+            border-radius: 40px;
+            font-weight: 600;
+            color: #9b7b3c;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.85rem;
+        }
+
+        .template-btn.active {
+            background: #c9a03d;
+            border-color: #b8860b;
+            color: white;
+        }
+
+        .template-btn:hover:not(.active) {
+            background: #fef3e0;
+        }
+
+        .upload-area {
+            background: #fefaf2;
+            border: 2px dashed #d4af7a;
+            border-radius: 28px;
+            padding: 20px 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.25s;
+            margin-bottom: 24px;
+        }
+
+        .upload-area:hover {
+            background: #fcf6e8;
+            border-color: #b8860b;
+        }
+
+        .upload-icon {
+            font-size: 40px;
+            margin-bottom: 6px;
+        }
+
+        .upload-area p {
+            color: #a07142;
+            font-weight: 500;
+            font-size: 0.85rem;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .slider-group {
+            margin: 18px 0;
+        }
+
+        .slider-group label {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 600;
+            color: #8b6b3d;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 5px;
+            -webkit-appearance: none;
+            background: #e3d5bc;
+            border-radius: 10px;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            background: #c9a03d;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+            border: none;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin: 24px 0 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px 16px;
+            border: none;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: 0.2s;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .btn-gold {
+            background: #c9a03d;
+            color: white;
+            border: 1px solid #b58d32;
+        }
+
+        .btn-gold:hover {
+            background: #b8860b;
+            transform: translateY(-1px);
+        }
+
+        .btn-outline-gold {
+            background: transparent;
+            border: 1.5px solid #d4af7a;
+            color: #9b7b3c;
+        }
+
+        .btn-outline-gold:hover {
+            background: #fef3e0;
+            border-color: #b8860b;
+        }
+
+        .info-note {
+            background: #fefaf2;
+            border-radius: 20px;
+            padding: 10px 12px;
+            font-size: 0.7rem;
+            color: #b48b3a;
+            text-align: center;
+            margin-top: 16px;
+            border: 1px solid #f0e2ce;
+        }
+
+        .alert-message {
+            background: #fff1e0;
+            border-left: 4px solid #e6a017;
+            padding: 10px 14px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            color: #aa7432;
+            margin: 12px 0;
+            display: none;
+        }
+
+        footer {
+            background: #fefaf2;
+            padding: 14px;
+            text-align: center;
+            font-size: 0.7rem;
+            color: #b6955c;
+            border-top: 1px solid #f0e2ce;
+        }
+
+        @media (max-width: 700px) {
+            .editor {
+                padding: 18px;
+            }
+            .btn {
+                padding: 10px 12px;
+            }
+            .template-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="app">
+    <div class="header">
+        <h1>⚜️ SAMIRA <span>✦ MILAD ✦</span> ⚜️</h1>
+    </div>
+    <div class="editor">
+        <div class="preview">
+            <div class="canvas-wrapper">
+                <canvas id="mainCanvas" width="800" height="800" style="width:100%; height:auto; aspect-ratio:1/1"></canvas>
+            </div>
+            <div class="info-note">
+                💫 Geser foto di dalam lingkaran putih | Zoom untuk menyesuaikan
+            </div>
+        </div>
+
+        <div class="controls">
+            <!-- Pilihan 2 template -->
+            <div class="template-selector">
+                <div class="template-title">
+                    🖼️ Pilih Template
+                </div>
+                <div class="template-buttons">
+                    <button id="template1Btn" class="template-btn active">📸 Template 1</button>
+                    <button id="template2Btn" class="template-btn">📸 Template 2</button>
+                </div>
+            </div>
+
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">🖼️ ➕ ⭕</div>
+                <p>Klik atau tarik foto ke sini</p>
+                <input type="file" id="photoInput" accept="image/jpeg, image/png, image/webp">
+            </div>
+
+            <div class="slider-group">
+                <label><span>🔍 Perbesar / Perkecil</span> <span id="zoomVal">100%</span></label>
+                <input type="range" id="zoomSlider" min="30" max="220" value="100" step="2">
+            </div>
+
+            <div class="slider-group">
+                <label>⬅️ Geser Horizontal ➡️</label>
+                <input type="range" id="offsetXSlider" min="-300" max="300" value="0" step="2">
+            </div>
+
+            <div class="slider-group">
+                <label>⬆️ Geser Vertikal ⬇️</label>
+                <input type="range" id="offsetYSlider" min="-300" max="300" value="0" step="2">
+            </div>
+
+            <div class="btn-group">
+                <button id="resetBtn" class="btn btn-outline-gold">⟳ Reset Posisi</button>
+                <button id="downloadBtn" class="btn btn-gold">⬇️ Unduh Foto</button>
+            </div>
+            <div id="alertBox" class="alert-message"></div>
+            <div class="info-note">
+                ✨ Foto akan muncul di LINGKARAN PUTIH (sebelah kanan template)<br>
+                Geser dan zoom agar pas! Bebas pilih 2 template.
+            </div>
+        </div>
+    </div>
+    <footer>
+        ⚜️ Samira Milad ke-10 • 2 Template pilihan • Lingkaran dengan ukuran sama
+    </footer>
+</div>
+
+<script>
+    (function() {
+        // ======================== DOM ========================
+        const canvas = document.getElementById('mainCanvas');
+        const ctx = canvas.getContext('2d');
+        const photoInput = document.getElementById('photoInput');
+        const uploadArea = document.getElementById('uploadArea');
+        const zoomSlider = document.getElementById('zoomSlider');
+        const zoomValSpan = document.getElementById('zoomVal');
+        const offsetXSlider = document.getElementById('offsetXSlider');
+        const offsetYSlider = document.getElementById('offsetYSlider');
+        const resetBtn = document.getElementById('resetBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const alertBox = document.getElementById('alertBox');
+        const template1Btn = document.getElementById('template1Btn');
+        const template2Btn = document.getElementById('template2Btn');
+
+        // ======================== STATE ========================
+        let currentTemplate = 'template1';   // 'template1' atau 'template2'
+        let template1Image = null;
+        let template2Image = null;
+        let activeTemplateImage = null;      // yang sedang ditampilkan
+        let userPhoto = null;
+        let photoLoaded = false;
+
+        // Lingkaran PUTIH (ukuran SAMA untuk kedua template)
+        let circle = { x: 0, y: 0, radius: 0 };
+
+        let zoomPercent = 100;
+        let offsetX = 0;
+        let offsetY = 0;
+
+        // ======================== UTILITY ========================
+        function showAlert(msg, isError = true) {
+            if (!msg) {
+                alertBox.style.display = 'none';
+                return;
+            }
+            alertBox.innerText = msg;
+            alertBox.style.display = 'block';
+            alertBox.style.background = isError ? '#ffe6d5' : '#eef4e6';
+            alertBox.style.borderLeftColor = isError ? '#d98c2b' : '#8faa6e';
+            setTimeout(() => {
+                if (alertBox.innerText === msg) alertBox.style.display = 'none';
+            }, 4000);
+        }
+
+        function updateUIFromState() {
+            zoomSlider.value = zoomPercent;
+            zoomValSpan.innerText = zoomPercent + '%';
+            offsetXSlider.value = offsetX;
+            offsetYSlider.value = offsetY;
+        }
+
+        function resetTransform() {
+            zoomPercent = 100;
+            offsetX = 0;
+            offsetY = 0;
+            updateUIFromState();
+            renderComposite();
+        }
+
+        // ======================== POSISI LINGKARAN (UKURAN SAMA) ========================
+        // Lingkaran putih berada di kanan template, radius 24% dari lebar canvas
+        function setCirclePosition(canvasWidth, canvasHeight) {
+            circle.x = canvasWidth * 0.74;
+            circle.y = canvasHeight * 0.5;
+            circle.radius = canvasWidth * 0.24;
+            
+            if (circle.radius < 90) circle.radius = 90;
+            if (circle.radius > canvasWidth * 0.32) circle.radius = canvasWidth * 0.32;
+        }
+
+        // ======================== RENDER KOMPOSISI ========================
+        function renderComposite() {
+            if (!activeTemplateImage) {
+                ctx.fillStyle = "#f3ede3";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "#b8860b";
+                ctx.font = "16px 'Segoe UI'";
+                ctx.fillText("Memuat template...", canvas.width/2-70, canvas.height/2);
+                return;
+            }
+
+            // Gambar template
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(activeTemplateImage, 0, 0, canvas.width, canvas.height);
+
+            // Jika ada foto, gambar di dalam lingkaran
+            if (photoLoaded && userPhoto) {
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(circle.x, circle.y, circle.radius, 0, Math.PI * 2);
+                ctx.clip();
+
+                const scale = zoomPercent / 100;
+                const baseDiameter = circle.radius * 2;
+                let displayWidth = baseDiameter * scale;
+                let displayHeight = (userPhoto.height / userPhoto.width) * displayWidth;
+
+                let drawX = circle.x + offsetX - (displayWidth / 2);
+                let drawY = circle.y + offsetY - (displayHeight / 2);
+
+                ctx.drawImage(userPhoto, drawX, drawY, displayWidth, displayHeight);
+                ctx.restore();
+
+                // Stroke lingkaran emas
+                ctx.beginPath();
+                ctx.arc(circle.x, circle.y, circle.radius, 0, 2 * Math.PI);
+                ctx.lineWidth = 3;
+                ctx.strokeStyle = "#d4af7a";
+                ctx.stroke();
+            }
+        }
+
+        // ======================== LOAD TEMPLATE ========================
+        function loadTemplate1() {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                img.crossOrigin = "Anonymous";
+                img.onload = () => {
+                    template1Image = img;
+                    console.log("✅ Template 1 loaded");
+                    resolve(img);
+                };
+                img.onerror = () => {
+                    reject(new Error("Template 1 tidak ditemukan di 'assets/template.png'"));
+                };
+                img.src = "assets/template.png?v=" + Date.now();
+            });
+        }
+
+        function loadTemplate2() {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                img.crossOrigin = "Anonymous";
+                img.onload = () => {
+                    template2Image = img;
+                    console.log("✅ Template 2 loaded");
+                    resolve(img);
+                };
+                img.onerror = () => {
+                    reject(new Error("Template 2 tidak ditemukan di 'assets/template2.png'"));
+                };
+                img.src = "assets/template2.png?v=" + Date.now();
+            });
+        }
+
+        // Ganti template aktif
+        async function switchTemplate(templateName) {
+            currentTemplate = templateName;
+            
+            // Update tombol aktif
+            if (templateName === 'template1') {
+                template1Btn.classList.add('active');
+                template2Btn.classList.remove('active');
+                if (template1Image) {
+                    activeTemplateImage = template1Image;
+                    // sesuaikan ukuran canvas
+                    canvas.width = template1Image.width;
+                    canvas.height = template1Image.height;
+                    setCirclePosition(canvas.width, canvas.height);
+                    renderComposite();
+                } else {
+                    // coba load ulang
+                    try {
+                        await loadTemplate1();
+                        activeTemplateImage = template1Image;
+                        canvas.width = template1Image.width;
+                        canvas.height = template1Image.height;
+                        setCirclePosition(canvas.width, canvas.height);
+                        renderComposite();
+                    } catch(err) {
+                        showAlert("Gagal memuat Template 1: " + err.message, true);
+                    }
+                }
+            } else {
+                template2Btn.classList.add('active');
+                template1Btn.classList.remove('active');
+                if (template2Image) {
+                    activeTemplateImage = template2Image;
+                    canvas.width = template2Image.width;
+                    canvas.height = template2Image.height;
+                    setCirclePosition(canvas.width, canvas.height);
+                    renderComposite();
+                } else {
+                    try {
+                        await loadTemplate2();
+                        activeTemplateImage = template2Image;
+                        canvas.width = template2Image.width;
+                        canvas.height = template2Image.height;
+                        setCirclePosition(canvas.width, canvas.height);
+                        renderComposite();
+                    } catch(err) {
+                        showAlert("Gagal memuat Template 2: " + err.message, true);
+                    }
+                }
+            }
+        }
+
+        // ======================== LOAD FOTO USER ========================
+        function loadUserPhoto(file) {
+            if (!file.type.startsWith('image/')) {
+                showAlert("❌ Hanya file gambar (JPG, PNG, WEBP)", true);
+                return false;
+            }
+            if (file.size > 12 * 1024 * 1024) {
+                showAlert("📁 Ukuran maksimal 12MB", true);
+                return false;
+            }
+            showAlert("", false);
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    userPhoto = img;
+                    photoLoaded = true;
+                    resetTransform();
+                    renderComposite();
+                };
+                img.onerror = () => {
+                    showAlert("Gagal memuat foto, coba file lain", true);
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+            return true;
+        }
+
+        // ======================== DOWNLOAD ========================
+        function downloadFinal() {
+            if (!activeTemplateImage) {
+                showAlert("⏳ Template masih dimuat, tunggu sebentar", true);
+                return;
+            }
+            if (!photoLoaded || !userPhoto) {
+                showAlert("📸 Upload foto terlebih dahulu!", true);
+                return;
+            }
+            renderComposite();
+            try {
+                const dataURL = canvas.toDataURL("image/png");
+                const link = document.createElement("a");
+                const timestamp = new Date().toISOString().slice(0,19).replace(/:/g, '-');
+                const templateName = currentTemplate === 'template1' ? 'template1' : 'template2';
+                link.download = `samira_${templateName}_${timestamp}.png`;
+                link.href = dataURL;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                showAlert("✅ Berhasil diunduh! Foto tersimpan.", false);
+            } catch(e) {
+                showAlert("Gagal menyimpan gambar: " + e.message, true);
+            }
+        }
+
+        // ======================== DRAG & GESER ========================
+        let isDragging = false;
+        let lastMouseX = 0, lastMouseY = 0;
+
+        function handleDragStart(e) {
+            if (!photoLoaded || !activeTemplateImage) return;
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            let clientX, clientY;
+            if (e.touches) {
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+                e.preventDefault();
+            } else {
+                clientX = e.clientX;
+                clientY = e.clientY;
+            }
+            let canvasX = (clientX - rect.left) * scaleX;
+            let canvasY = (clientY - rect.top) * scaleY;
+            isDragging = true;
+            lastMouseX = canvasX;
+            lastMouseY = canvasY;
+            canvas.style.cursor = 'grabbing';
+        }
+
+        function handleDragMove(e) {
+            if (!isDragging || !photoLoaded) return;
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            let clientX, clientY;
+            if (e.touches) {
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+                e.preventDefault();
+            } else {
+                clientX = e.clientX;
+                clientY = e.clientY;
+            }
+            let canvasX = (clientX - rect.left) * scaleX;
+            let canvasY = (clientY - rect.top) * scaleY;
+            let deltaX = canvasX - lastMouseX;
+            let deltaY = canvasY - lastMouseY;
+            if (deltaX !== 0 || deltaY !== 0) {
+                offsetX += deltaX;
+                offsetY += deltaY;
+                const maxOffset = circle.radius * 1.3;
+                offsetX = Math.min(Math.max(offsetX, -maxOffset), maxOffset);
+                offsetY = Math.min(Math.max(offsetY, -maxOffset), maxOffset);
+                offsetXSlider.value = offsetX;
+                offsetYSlider.value = offsetY;
+                renderComposite();
+            }
+            lastMouseX = canvasX;
+            lastMouseY = canvasY;
+        }
+
+        function handleDragEnd() {
+            isDragging = false;
+            canvas.style.cursor = 'grab';
+        }
+
+        // ======================== BIND EVENTS ========================
+        function bindEvents() {
+            canvas.addEventListener('mousedown', handleDragStart);
+            window.addEventListener('mousemove', handleDragMove);
+            window.addEventListener('mouseup', handleDragEnd);
+            canvas.addEventListener('touchstart', handleDragStart, { passive: false });
+            window.addEventListener('touchmove', handleDragMove, { passive: false });
+            window.addEventListener('touchend', handleDragEnd);
+
+            zoomSlider.addEventListener('input', (e) => {
+                zoomPercent = parseInt(e.target.value);
+                zoomValSpan.innerText = zoomPercent + '%';
+                if (photoLoaded && activeTemplateImage) renderComposite();
+            });
+            offsetXSlider.addEventListener('input', (e) => {
+                offsetX = parseInt(e.target.value);
+                if (photoLoaded && activeTemplateImage) renderComposite();
+            });
+            offsetYSlider.addEventListener('input', (e) => {
+                offsetY = parseInt(e.target.value);
+                if (photoLoaded && activeTemplateImage) renderComposite();
+            });
+
+            resetBtn.addEventListener('click', resetTransform);
+            downloadBtn.addEventListener('click', downloadFinal);
+
+            template1Btn.addEventListener('click', () => switchTemplate('template1'));
+            template2Btn.addEventListener('click', () => switchTemplate('template2'));
+
+            uploadArea.addEventListener('click', () => photoInput.click());
+            photoInput.addEventListener('change', (e) => {
+                if (e.target.files && e.target.files[0]) loadUserPhoto(e.target.files[0]);
+            });
+
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.style.background = "#faf0df";
+            });
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.style.background = "#fefaf2";
+            });
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.style.background = "#fefaf2";
+                const files = e.dataTransfer.files;
+                if (files && files.length > 0) loadUserPhoto(files[0]);
+            });
+        }
+
+        // ======================== INIT ========================
+        async function init() {
+            bindEvents();
+            
+            ctx.fillStyle = "#f3ede3";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "#b8860b";
+            ctx.font = "14px 'Segoe UI'";
+            ctx.fillText("Memuat template...", canvas.width/2-60, canvas.height/2);
+            
+            // Load kedua template sekaligus
+            let template1Loaded = false;
+            let template2Loaded = false;
+            
+            try {
+                await loadTemplate1();
+                template1Loaded = true;
+            } catch(err) {
+                console.warn(err);
+                showAlert("⚠️ Template 1 (template.png) tidak ditemukan", true);
+            }
+            
+            try {
+                await loadTemplate2();
+                template2Loaded = true;
+            } catch(err) {
+                console.warn(err);
+                showAlert("⚠️ Template 2 (template2.png) tidak ditemukan", true);
+            }
+            
+            // Aktifkan template yang tersedia
+            if (template1Loaded) {
+                activeTemplateImage = template1Image;
+                canvas.width = template1Image.width;
+                canvas.height = template1Image.height;
+                setCirclePosition(canvas.width, canvas.height);
+                renderComposite();
+                template1Btn.classList.add('active');
+                template2Btn.classList.remove('active');
+            } else if (template2Loaded) {
+                activeTemplateImage = template2Image;
+                canvas.width = template2Image.width;
+                canvas.height = template2Image.height;
+                setCirclePosition(canvas.width, canvas.height);
+                renderComposite();
+                template2Btn.classList.add('active');
+                template1Btn.classList.remove('active');
+                currentTemplate = 'template2';
+            } else {
+                showAlert("❌ Kedua template tidak ditemukan! Pastikan assets/template.png dan assets/template2.png ada.", true);
+                ctx.fillStyle = "#f3ede3";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "#b8860b";
+                ctx.font = "bold 16px 'Segoe UI'";
+                ctx.fillText("Template tidak tersedia", canvas.width/2-100, canvas.height/2);
+            }
+        }
+
+        init();
+    })();
+</script>
+</body>
+</html>
